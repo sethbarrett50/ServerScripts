@@ -5,6 +5,19 @@ from bs4 import BeautifulSoup as bs4, Tag
 
 
 def readFile(file_path:str) -> str:
+    """
+    Read the contents of a file and return its content as a string.
+
+    Args:
+        file_path (str): The path to the file to be read.
+
+    Returns:
+        str: The content of the file as a string.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        Exception: If any other error occurs while reading the file.
+    """
     try:
         with open(file_path, 'r') as file:
             return file.read()
@@ -14,9 +27,28 @@ def readFile(file_path:str) -> str:
         print(f"An error occurred: {str(e)}")
 
 def readTemplate() -> str:
+    """
+    Read and return the content of a template file used in a scraping process.
+
+    Returns:
+        str: The content of the template file as a string.
+
+    Note:
+        This function internally calls `readFile` to read the template file.
+    """
     return readFile("./Scrape_Blog/template.html")
 
 def readInput() -> str:
+    """
+    Read and return the content of the input HTML file for a scraping process.
+
+    Returns:
+        str: The content of the input HTML file as a string.
+
+    Raises:
+        FileNotFoundError: If the input directory or HTML file does not exist.
+        ValueError: If multiple HTML files are found in the input directory.
+    """
     inputPath = "./Scrape_Blog/input"
     if not os.path.exists(inputPath) or not os.path.isdir(inputPath):
         raise FileNotFoundError(f"Directory '{inputPath}' does not exist.")
@@ -28,6 +60,20 @@ def readInput() -> str:
     return readFile(os.path.join(inputPath, html_files[0]))
 
 def setDate() -> datetime:
+    """
+    Set and return a datetime object based on a command-line argument or the current date.
+
+    Returns:
+        datetime.datetime: A datetime object representing the specified or current date.
+
+    Raises:
+        ValueError: If the command-line argument is not in the 'MM-DD-YYYY' format.
+
+    Note:
+        - This function parses a date string provided as a command-line argument in 'MM-DD-YYYY' format.
+        - If no argument is provided, it returns the current date.
+        - An error is raised for an invalid date format.
+    """
     if len(sys.argv) > 1:
         try:
             return datetime.strptime(sys.argv[1], '%m-%d-%Y')
@@ -36,12 +82,28 @@ def setDate() -> datetime:
             return datetime.now()
     else:
         return datetime.now()
-'''
-TODO:
-    - Add next & prev button update
-    - Add li, ul & ol update
-'''
+    
 def createPosts(currDate:datetime) -> None:
+    """
+    Create daily blog post HTML documents based on input data and templates.
+
+    Args:
+        currDate (datetime): The current date for the blog post.
+
+    Raises:
+        ValueError: If the input data contains invalid HTML elements.
+
+    Note:
+        - This function reads input HTML data, processes it, and creates output HTML documents.
+        - It inserts the content from the input data into a template, processes HTML elements,
+          and removes specific elements such as 'strong', 'h1', 'code', 'span', and 'button'.
+        - Each daily blog post is saved as an HTML file in the 'output' directory.
+
+    TODO:
+        - Add next & prev button update
+        - Add li, ul & ol update
+
+    """
     inputSoup = bs4(readInput(), 'html.parser')
     template = readTemplate()
     for post in inputSoup.find_all('div', class_='markdown'):
