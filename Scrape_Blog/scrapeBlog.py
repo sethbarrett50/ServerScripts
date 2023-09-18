@@ -163,21 +163,38 @@ def createPosts(currDate:datetime) -> None:
             span.extract()
         for span in output.find_all('button', class_='flex'):
             span.extract()
-        
-        output_dir = "./Scrape_Blog/output"
-        os.makedirs(output_dir, exist_ok=True)
-        filename = currDate.strftime("%m_%d_%Y.html")
-        file_path = os.path.join(output_dir, filename)
-        try:
-            with open(file_path, "w") as file:
-                file.write(output.prettify())
-            print(f"Output written to {file_path}")
-            # input()
-        except Exception as e:
-            print(f"An error occurred while writing to the file: {str(e)}")
-        
+
+        saveFile(output, currDate)
         currDate = currDate + timedelta(days=1)
         
+
+def saveFile(output:bs4, currDate:datetime):
+    """
+    Save a BeautifulSoup object to an HTML file with a specific date-based filename.
+
+    Args:
+        output (bs4.BeautifulSoup): The BeautifulSoup object to be saved as HTML.
+        currDate (datetime.datetime): The date used for generating the filename.
+
+    Note:
+        - This function creates a directory named 'output' if it doesn't exist.
+        - It saves the content of the BeautifulSoup object to an HTML file with a filename
+          based on the provided date.
+        - The output file is saved in the 'output' directory.
+
+    """
+    output_dir = "./Scrape_Blog/output"
+    os.makedirs(output_dir, exist_ok=True)
+    filename = currDate.strftime("%m_%d_%Y.html")
+    file_path = os.path.join(output_dir, filename)
+    try:
+        with open(file_path, "w") as file:
+            file.write(output.prettify())
+        print(f"Output written to {file_path}")
+        # input()
+    except Exception as e:
+        print(f"An error occurred while writing to the file: {str(e)}")
+
         
 
 def main():
